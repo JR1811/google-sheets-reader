@@ -19,7 +19,7 @@ public class SheetsS2CNetworking {
                                                        PacketByteBuf buf, PacketSender packetSender) {
         client.execute(() -> {
             SheetsReaderClient.clientTick.startTicking(3, false, () -> {
-                SheetsReader.elementList = SheetsElement.getItemList();
+                SheetsReader.elementList = SheetsElement.getRestrictedItemList();
                 if (client.player != null) {
                     client.getSoundManager().play(PositionedSoundInstance.master(SheetsReaderSound.EVENT_REFRESH, 1f, 2f));
                 }

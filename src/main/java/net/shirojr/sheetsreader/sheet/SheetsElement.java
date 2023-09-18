@@ -15,7 +15,7 @@ import java.util.List;
 import static net.shirojr.sheetsreader.util.SheetsReaderImpl.getSheetsService;
 
 public record SheetsElement(@NotNull Identifier id, @Nullable String name, @Nullable String restriction, @Nullable String reason, @Nullable String magic) {
-    public static List<SheetsElement> getItemList() {
+    public static List<SheetsElement> getRestrictedItemList() {
         List<SheetsElement> list = new ArrayList<>();
         Sheets sheetsService;
 
@@ -23,7 +23,9 @@ public record SheetsElement(@NotNull Identifier id, @Nullable String name, @Null
             sheetsService = getSheetsService();
             SheetsReader.devLogger("got getSheetsService");
 
-            ValueRange response = sheetsService.spreadsheets().values().get(SheetsReaderImpl.SPREAD_SHEET_ID, SheetsReaderImpl.RANGE_ITEMS).execute();
+            ValueRange response = sheetsService.spreadsheets().values()
+                    .get(SheetsReaderImpl.SPREAD_SHEET_ID, SheetsReaderImpl.RANGE_ITEMS)
+                    .execute();
 
             List<List<Object>> values = response.getValues();
             SheetsReader.devLogger("got response");

@@ -19,7 +19,7 @@ public class ClientTickHandler {
     /**
      * Starts the ticking of the {@link ClientTickHandler} instance.<br>
      * Make sure to have the {@link ClientTickEvents#END_CLIENT_TICK Event} registered already,
-     * using the {@link #registerCountdown()} method
+     * using the {@link #registerCountdown()} method.
      * @param seconds specifies the time until the {@link #executor} will be executed
      * @param printValues print the countdown values into the chat of the current client
      * @param executor pass over a {@linkplain  Runnable Functional Interface} which will be executed
@@ -35,11 +35,11 @@ public class ClientTickHandler {
 
     /**
      * Registers a countdown in seconds on the client side.<br>
-     * Use {@link #startTicking(float, boolean, Runnable)} to initiate this method
+     * Use {@link #startTicking(float, boolean, Runnable)} to start the countdown.
      */
     public void registerCountdown() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if ( !shouldTick || client.player == null) return;
+            if (!shouldTick || client.player == null) return;
             this.tick--;
 
             if (tick % 20 == 0 && tick > 0 && printValues) {

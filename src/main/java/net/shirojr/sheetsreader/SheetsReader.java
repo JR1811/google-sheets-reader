@@ -1,10 +1,8 @@
 package net.shirojr.sheetsreader;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.registry.Registry;
-import net.shirojr.sheetsreader.command.ForceListReloadCommand;
+import net.shirojr.sheetsreader.event.CommandRegistrationEvents;
 import net.shirojr.sheetsreader.sheet.SheetsElement;
 import net.shirojr.sheetsreader.sound.SheetsReaderSound;
 import org.slf4j.Logger;
@@ -19,8 +17,8 @@ public class SheetsReader implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        elementList = SheetsElement.getItemList();
-        CommandRegistrationCallback.EVENT.register(ForceListReloadCommand::register);
+        elementList = SheetsElement.getRestrictedItemList();
+        CommandRegistrationEvents.register();
         SheetsReaderSound.initializeSounds();
     }
 
