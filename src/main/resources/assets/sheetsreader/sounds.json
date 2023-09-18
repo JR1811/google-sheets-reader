@@ -1,0 +1,8 @@
+{
+  "refresh": {
+    "subtitle": "sound.sheetsreader.refresh",
+    "sounds": [
+      "sheetsreader:refreshed"
+    ]
+  }
+}
