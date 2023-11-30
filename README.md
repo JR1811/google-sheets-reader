@@ -1,4 +1,4 @@
-# Google Sheets Reader for Fabric
+# Google Sheets Reader for Fabric [Prototype]
 
 Get information from Google Sheets using the Google Sheets API in a Fabric Mod
 
