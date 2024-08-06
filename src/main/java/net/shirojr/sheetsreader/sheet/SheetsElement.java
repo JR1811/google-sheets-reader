@@ -22,13 +22,16 @@ public record SheetsElement(@NotNull Identifier id, @Nullable String name, @Null
 
         try {
             Sheets sheetsService = getSheetsService().orElseThrow(() -> new NoSuchProviderException("Couldn't find the sheet service to retrieve data"));
+            if (SheetsReader.getConfig().isEmpty())
+                throw new Exception("Config data was not present or complete. Skipping Data retrieval");
+
             ValueRange response = sheetsService.spreadsheets().values()
                     .get(SheetsReaderImpl.SPREAD_SHEET_ID, SheetsReaderImpl.RANGE_ITEMS)
                     .execute();
 
             List<List<Object>> values = response.getValues();
             SheetsReader.devLogger("got response");
-            if (values == null || values.isEmpty()) SheetsReader.devLogger("no values found!", true, null);
+            if (values == null || values.isEmpty()) SheetsReader.devLogger("no values found in Sheet!", true, null);
             else {
                 Identifier id = null;
                 String name = null, restriction = null, reason = null, magic = null;

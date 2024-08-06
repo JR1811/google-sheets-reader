@@ -8,8 +8,8 @@
 		"ShiroJR1811 - Dev"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/JR1811",
+		"sources": "https://github.com/JR1811/google-sheets-reader"
 	},
 	"license": "MIT",
 	"icon": "assets/sheetsreader/icon.png",

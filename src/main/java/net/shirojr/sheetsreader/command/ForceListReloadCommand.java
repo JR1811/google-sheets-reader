@@ -11,7 +11,9 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
+import net.shirojr.sheetsreader.SheetsReader;
 import net.shirojr.sheetsreader.network.SheetsS2CNetworking;
+import net.shirojr.sheetsreader.sheet.SheetsElement;
 
 import java.util.Collection;
 
@@ -26,11 +28,12 @@ public class ForceListReloadCommand {
     }
 
     private static int runRefresh(CommandContext<ServerCommandSource> context, Collection<ServerPlayerEntity> targets) throws CommandSyntaxException {
-        if (targets.size() < 1) {
+        if (targets.isEmpty()) {
             context.getSource().sendFeedback(new TranslatableText("feedback.sheetsreader.player.error"), true);
             return -1;
         }
         for (var target : targets) {
+            SheetsReader.elementList = SheetsElement.getRestrictedItemList();
             PacketByteBuf buf = PacketByteBufs.create();
             ServerPlayNetworking.send(target, SheetsS2CNetworking.REFRESH_SOURCE_CHANNEL, buf);
         }

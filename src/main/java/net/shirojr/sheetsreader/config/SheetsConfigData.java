@@ -22,6 +22,14 @@ public record SheetsConfigData(String sheetsId, String range, String apiKey) {
             .setPrettyPrinting()
             .create();
 
+    public SheetsConfigData() {
+        this("", "", "");
+    }
+
+    public boolean isEmpty() {
+        return apiKey.isEmpty() || sheetsId.isEmpty() || range.isEmpty();
+    }
+
     public void setSpreadsheetId(String id) {
         SheetsConfigData updatedConfig = new SheetsConfigData(id, range(), apiKey());
         updatedConfig.saveToFile();
@@ -64,6 +72,6 @@ public record SheetsConfigData(String sheetsId, String range, String apiKey) {
         } catch (JsonParseException e) {
             SheetsReader.devLogger("Failed to parse Config file", true, e);
         }
-        return new SheetsConfigData("", "", "");
+        return new SheetsConfigData();
     }
 }

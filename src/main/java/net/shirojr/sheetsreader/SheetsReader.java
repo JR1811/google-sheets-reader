@@ -16,7 +16,7 @@ public class SheetsReader implements ModInitializer {
     public static final String MODID = "sheetsreader";
     private static final Logger LOGGER = LoggerFactory.getLogger(MODID);
     public static List<SheetsElement> elementList;
-    private static SheetsConfigData config = new SheetsConfigData("", "", "");
+    private static SheetsConfigData config = new SheetsConfigData();
 
     @Override
     public void onInitialize() {
