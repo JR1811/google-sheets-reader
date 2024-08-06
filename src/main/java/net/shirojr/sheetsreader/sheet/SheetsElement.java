@@ -9,27 +9,26 @@ import net.shirojr.sheetsreader.util.SheetsReaderImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static net.shirojr.sheetsreader.util.SheetsReaderImpl.getSheetsService;
 
-public record SheetsElement(@NotNull Identifier id, @Nullable String name, @Nullable String restriction, @Nullable String reason, @Nullable String magic) {
+public record SheetsElement(@NotNull Identifier id, @Nullable String name, @Nullable String restriction,
+                            @Nullable String reason, @Nullable String magic) {
     public static List<SheetsElement> getRestrictedItemList() {
         List<SheetsElement> list = new ArrayList<>();
-        Sheets sheetsService;
 
         try {
-            sheetsService = getSheetsService();
-            SheetsReader.devLogger("got getSheetsService");
-
+            Sheets sheetsService = getSheetsService().orElseThrow(() -> new NoSuchProviderException("Couldn't find the sheet service to retrieve data"));
             ValueRange response = sheetsService.spreadsheets().values()
                     .get(SheetsReaderImpl.SPREAD_SHEET_ID, SheetsReaderImpl.RANGE_ITEMS)
                     .execute();
 
             List<List<Object>> values = response.getValues();
             SheetsReader.devLogger("got response");
-            if (values == null || values.isEmpty()) SheetsReader.devLogger("no values found!");
+            if (values == null || values.isEmpty()) SheetsReader.devLogger("no values found!", true, null);
             else {
                 Identifier id = null;
                 String name = null, restriction = null, reason = null, magic = null;
@@ -60,7 +59,7 @@ public record SheetsElement(@NotNull Identifier id, @Nullable String name, @Null
             }
 
         } catch (Exception e) {
-            SheetsReader.devLogger("Error while creating sheetsService: " + e);
+            SheetsReader.devLogger("Error while creating sheetsService", true, e);
             list.clear();
         }
 
@@ -85,7 +84,6 @@ public record SheetsElement(@NotNull Identifier id, @Nullable String name, @Null
      */
     public void log() {
         SheetsReader.devLogger("Element: %s | %s | %s | %s | %s"
-                .formatted(this.id, this.name, this.restriction, this.reason, this.magic)
-        );
+                .formatted(this.id, this.name, this.restriction, this.reason, this.magic));
     }
 }
