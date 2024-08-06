@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.shirojr.sheetsreader.SheetsReader;
@@ -12,14 +13,21 @@ import net.shirojr.sheetsreader.SheetsReaderClient;
 import net.shirojr.sheetsreader.sheet.SheetsElement;
 import net.shirojr.sheetsreader.sound.SheetsReaderSound;
 
+import java.util.List;
+
 public class SheetsS2CNetworking {
     public static final Identifier REFRESH_SOURCE_CHANNEL = new Identifier(SheetsReader.MODID, "refresh_sheets_source");
 
     private static void handleSheetSourceRefreshPacket(MinecraftClient client, ClientPlayNetworkHandler clientPlayNetworkHandler,
                                                        PacketByteBuf buf, PacketSender packetSender) {
+        NbtCompound nbt = buf.readNbt();
+        if (nbt == null) return;
+
+        List<SheetsElement> elements = SheetsElement.fromNbt(nbt);
+
         client.execute(() -> {
             SheetsReaderClient.clientTick.startTicking(3, false, () -> {
-                SheetsReader.elementList = SheetsElement.getRestrictedItemList();
+                SheetsReader.setElementList(elements);
                 if (client.player != null) {
                     client.getSoundManager().play(PositionedSoundInstance.master(SheetsReaderSound.EVENT_REFRESH, 1f, 2f));
                 }

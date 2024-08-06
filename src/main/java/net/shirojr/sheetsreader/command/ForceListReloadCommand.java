@@ -6,16 +6,18 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
-import net.shirojr.sheetsreader.SheetsReader;
 import net.shirojr.sheetsreader.network.SheetsS2CNetworking;
 import net.shirojr.sheetsreader.sheet.SheetsElement;
+import net.shirojr.sheetsreader.util.SheetsReaderUtil;
 
 import java.util.Collection;
+import java.util.List;
 
 public class ForceListReloadCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
@@ -33,8 +35,10 @@ public class ForceListReloadCommand {
             return -1;
         }
         for (var target : targets) {
-            SheetsReader.elementList = SheetsElement.getRestrictedItemList();
+            List<SheetsElement> elements = SheetsReaderUtil.getDataFromApi();
+            NbtCompound compound = SheetsElement.toNbt(elements, new NbtCompound());
             PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeNbt(compound);
             ServerPlayNetworking.send(target, SheetsS2CNetworking.REFRESH_SOURCE_CHANNEL, buf);
         }
 

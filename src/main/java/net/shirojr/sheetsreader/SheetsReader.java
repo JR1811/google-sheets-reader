@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.shirojr.sheetsreader.config.SheetsConfigData;
 import net.shirojr.sheetsreader.event.CommandRegistrationEvents;
+import net.shirojr.sheetsreader.event.ServerLifeCycleEvents;
 import net.shirojr.sheetsreader.sheet.SheetsElement;
 import net.shirojr.sheetsreader.sound.SheetsReaderSound;
 import org.jetbrains.annotations.Nullable;
@@ -15,15 +16,14 @@ import java.util.List;
 public class SheetsReader implements ModInitializer {
     public static final String MODID = "sheetsreader";
     private static final Logger LOGGER = LoggerFactory.getLogger(MODID);
-    public static List<SheetsElement> elementList;
+
+    private static List<SheetsElement> elementList;
     private static SheetsConfigData config = new SheetsConfigData();
 
     @Override
     public void onInitialize() {
-        config = config.loadFromFile();
-        elementList = SheetsElement.getRestrictedItemList();
-
         CommandRegistrationEvents.register();
+        ServerLifeCycleEvents.register();
         SheetsReaderSound.initializeSounds();
     }
 
@@ -33,6 +33,14 @@ public class SheetsReader implements ModInitializer {
 
     public static void setConfig(SheetsConfigData config) {
         SheetsReader.config = config;
+    }
+
+    public static List<SheetsElement> getElementList() {
+        return elementList;
+    }
+
+    public static void setElementList(List<SheetsElement> elementList) {
+        SheetsReader.elementList = elementList;
     }
 
     public static void devLogger(String input) {

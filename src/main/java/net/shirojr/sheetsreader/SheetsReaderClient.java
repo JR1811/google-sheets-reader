@@ -6,6 +6,7 @@ import net.shirojr.sheetsreader.network.SheetsS2CNetworking;
 
 public class SheetsReaderClient implements ClientModInitializer {
     public static ClientTickHandler clientTick = new ClientTickHandler();
+
     @Override
     public void onInitializeClient() {
         SheetsS2CNetworking.registerClientReceiver();

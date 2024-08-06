@@ -1,92 +1,54 @@
 package net.shirojr.sheetsreader.sheet;
 
-import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.ValueRange;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.shirojr.sheetsreader.SheetsReader;
-import net.shirojr.sheetsreader.util.SheetsReaderImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.shirojr.sheetsreader.util.SheetsReaderImpl.getSheetsService;
-
 public record SheetsElement(@NotNull Identifier id, @Nullable String name, @Nullable String restriction,
                             @Nullable String reason, @Nullable String magic) {
-    public static List<SheetsElement> getRestrictedItemList() {
-        List<SheetsElement> list = new ArrayList<>();
 
-        try {
-            Sheets sheetsService = getSheetsService().orElseThrow(() -> new NoSuchProviderException("Couldn't find the sheet service to retrieve data"));
-            if (SheetsReader.getConfig().isEmpty())
-                throw new Exception("Config data was not present or complete. Skipping Data retrieval");
 
-            ValueRange response = sheetsService.spreadsheets().values()
-                    .get(SheetsReaderImpl.SPREAD_SHEET_ID, SheetsReaderImpl.RANGE_ITEMS)
-                    .execute();
+    public static List<SheetsElement> fromNbt(NbtCompound nbt) {
+        List<SheetsElement> elementList = new ArrayList<>();
 
-            List<List<Object>> values = response.getValues();
-            SheetsReader.devLogger("got response");
-            if (values == null || values.isEmpty()) SheetsReader.devLogger("no values found in Sheet!", true, null);
-            else {
-                Identifier id = null;
-                String name = null, restriction = null, reason = null, magic = null;
+        NbtList elementsNbt = nbt.getList("elements", NbtElement.COMPOUND_TYPE);
+        for (var entry : elementsNbt) {
+            NbtCompound entryCompound = (NbtCompound) entry;
+            String name = null, restriction = null, reason = null, magic = null;
+            Identifier identifier = new Identifier(entryCompound.getString("identifier"));
 
-                for (var row : values) {
-                    for (int cell = 0; cell < row.size(); cell++) {
-                        while (row.size() <= 5) {
-                            row.add(null);
-                        }
+            if (!entryCompound.contains("identifier")) continue;
 
-                        String cellValue = (String) row.get(cell);
-                        if (cellValue != null && cellValue.isBlank()) cellValue = null;
+            if (entryCompound.contains("name")) name = entryCompound.getString("name");
+            if (entryCompound.contains("restriction")) restriction = entryCompound.getString("restriction");
+            if (entryCompound.contains("reason")) reason = entryCompound.getString("reason");
+            if (entryCompound.contains("magic")) magic = entryCompound.getString("magic");
 
-                        switch (cell) {
-                            case 0 -> id = getValidIdFromString(cellValue);
-                            case 1 -> name = cellValue;
-                            case 2 -> restriction = cellValue;
-                            case 3 -> reason = cellValue;
-                            case 4 -> magic = cellValue;
-                        }
-                    }
-                    if (id != null) {
-                        SheetsElement element = new SheetsElement(id, name, restriction, reason, magic);
-                        element.log();
-                        list.add(element);
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            SheetsReader.devLogger("Error while creating sheetsService", true, e);
-            list.clear();
+            elementList.add(new SheetsElement(identifier, name, restriction, reason, magic));
         }
 
-        return list;
+        return elementList;
     }
 
-    /**
-     * Get valid Item Identifier if the input exists in the registry
-     *
-     * @param id String of an item id tag (e.g. minecraft:stick)
-     * @return valid Identifier of an Item or Null
-     */
-    @Nullable
-    public static Identifier getValidIdFromString(String id) {
-        Identifier identifier = new Identifier(id);
-        if (!Registry.ITEM.containsId(identifier)) return null;
-        return identifier;
-    }
+    public static NbtCompound toNbt(List<SheetsElement> elements, NbtCompound nbt) {
+        NbtList list = new NbtList();
+        for (SheetsElement element : elements) {
+            NbtCompound elementsCompound = new NbtCompound();
+            elementsCompound.putString("identifier", element.id.toString());
+            if (element.name != null) elementsCompound.putString("name", element.name);
+            if (element.restriction != null) elementsCompound.putString("restriction", element.restriction);
+            if (element.reason != null) elementsCompound.putString("reason", element.reason);
+            if (element.magic != null) elementsCompound.putString("magic", element.magic);
+            list.add(elementsCompound);
+        }
 
-    /**
-     * Prints the current {@linkplain SheetsElement} using the devLogger
-     */
-    public void log() {
-        SheetsReader.devLogger("Element: %s | %s | %s | %s | %s"
-                .formatted(this.id, this.name, this.restriction, this.reason, this.magic));
+        nbt.put("elements", list);
+        return nbt;
     }
 }

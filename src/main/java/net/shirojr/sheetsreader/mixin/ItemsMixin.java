@@ -5,7 +5,6 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -28,14 +27,15 @@ public abstract class ItemsMixin {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
         if (world == null) return;
 
-        for (SheetsElement entry : SheetsReader.elementList) {
+        for (SheetsElement entry : SheetsReader.getElementList()) {
             Identifier regId = Registry.ITEM.getId(stack.getItem());
             if (regId.equals(entry.id())) {
                 if (entry.restriction() != null) {
                     Style restrictionStyle = Style.EMPTY;
                     switch (entry.restriction()) {
                         case "Banned" -> restrictionStyle = restrictionStyle.withBold(true).withColor(Formatting.RED);
-                        case "Partially Usable" -> restrictionStyle = restrictionStyle.withBold(true).withColor(Formatting.GOLD);
+                        case "Partially Usable" ->
+                                restrictionStyle = restrictionStyle.withBold(true).withColor(Formatting.GOLD);
                         default -> restrictionStyle = restrictionStyle.withBold(true).withColor(Formatting.GREEN);
                     }
                     var restrictionText = new LiteralText(entry.restriction()).setStyle(restrictionStyle);
