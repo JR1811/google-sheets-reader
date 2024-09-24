@@ -72,6 +72,7 @@ public record SheetsConfigData(String sheetsId, String range, String apiKey) {
         } catch (JsonParseException e) {
             SheetsReader.devLogger("Failed to parse Config file", true, e);
         }
+        SheetsReader.LOGGER.error("Missing important credentials for Google Sheets API. Check the config at: %s".formatted(SheetsReaderUtil.CONFIG_FILE));
         return new SheetsConfigData();
     }
 }
