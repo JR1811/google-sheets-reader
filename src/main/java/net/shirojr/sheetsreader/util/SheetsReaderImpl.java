@@ -20,9 +20,12 @@ public class SheetsReaderImpl {
     public static Optional<Sheets> getSheetsService() throws IOException, GeneralSecurityException {
         var modContainer = FabricLoader.getInstance().getModContainer(SheetsReader.MODID);
         if (modContainer.isEmpty()) return Optional.empty();
-
-        var builder = new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), GsonFactory.getDefaultInstance(), null);
-        var retrievedBuilder = builder.setApplicationName(APPLICATION_NAME).setGoogleClientRequestInitializer(request -> {
+        Sheets.Builder builder = new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), GsonFactory.getDefaultInstance(), httpRequest -> {
+            httpRequest.setConnectTimeout(30000);   // 1/2 minutes connect timeout
+            httpRequest.setReadTimeout(30000);      // 1/2 minutes read timeout
+            httpRequest.setLoggingEnabled(true);
+        });
+        Sheets retrievedBuilder = builder.setApplicationName(APPLICATION_NAME).setGoogleClientRequestInitializer(request -> {
             if (!(request instanceof AbstractGoogleJsonClientRequest<?> jsonClientRequest)) return;
             jsonClientRequest.set("key", API_KEY);
         }).build();

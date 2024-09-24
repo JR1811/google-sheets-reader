@@ -25,8 +25,7 @@ import java.util.List;
 public abstract class ItemsMixin {
     @Inject(method = "appendTooltip", at = @At("HEAD"))
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo ci) {
-        if (world == null) return;
-
+        if (world == null || SheetsReader.getElementList() == null) return;
         for (SheetsElement entry : SheetsReader.getElementList()) {
             Identifier regId = Registry.ITEM.getId(stack.getItem());
             if (regId.equals(entry.id())) {

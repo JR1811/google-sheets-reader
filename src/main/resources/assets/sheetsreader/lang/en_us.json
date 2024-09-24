@@ -1,5 +1,6 @@
 {
   "feedback.sheetsreader.player.error": "Couldn't load player list",
   "feedback.sheetsreader.player.sent": "Refreshing Google Sheets Source for all specified players",
-  "chat.sheetsreader.refresh.countdown": "Instance may freeze in: "
+  "chat.sheetsreader.refresh.countdown": "Instance may freeze in: ",
+  "feedback.sheetsreader.data.empty": "No (new) data was found from API. Skipped %s"
 }

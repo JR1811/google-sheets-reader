@@ -34,8 +34,12 @@ public class ForceListReloadCommand {
             context.getSource().sendFeedback(new TranslatableText("feedback.sheetsreader.player.error"), true);
             return -1;
         }
-        for (var target : targets) {
+        for (ServerPlayerEntity target : targets) {
             List<SheetsElement> elements = SheetsReaderUtil.getDataFromApi();
+            if (elements == null) {
+                context.getSource().sendFeedback(new TranslatableText("feedback.sheetsreader.data.empty", target.getName()), true);
+                continue;
+            }
             NbtCompound compound = SheetsElement.toNbt(elements, new NbtCompound());
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeNbt(compound);

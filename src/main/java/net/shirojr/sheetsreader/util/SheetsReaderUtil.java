@@ -1,5 +1,6 @@
 package net.shirojr.sheetsreader.util;
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import net.fabricmc.loader.api.FabricLoader;
@@ -23,6 +24,7 @@ public class SheetsReaderUtil {
     public static final Path FILES_DIR = FabricLoader.getInstance().getConfigDir().resolve(SheetsReader.MODID);
     public static final Path CONFIG_FILE = FILES_DIR.resolve("config.json");
 
+    @Nullable
     public static List<SheetsElement> getDataFromApi() {
         List<SheetsElement> list = new ArrayList<>();
 
@@ -30,14 +32,20 @@ public class SheetsReaderUtil {
             Sheets sheetsService = getSheetsService().orElseThrow(() -> new NoSuchProviderException("Couldn't find the sheet service to retrieve data"));
             if (SheetsReader.getConfig().isEmpty())
                 throw new Exception("Config data was not present or complete. Skipping Data retrieval");
-
-            ValueRange response = sheetsService.spreadsheets().values()
-                    .get(SheetsReaderImpl.SPREAD_SHEET_ID, SheetsReaderImpl.RANGE_ITEMS)
-                    .execute();
+            ValueRange response;
+            try {
+                response = sheetsService.spreadsheets().values()
+                        .get(SheetsReaderImpl.SPREAD_SHEET_ID, SheetsReaderImpl.RANGE_ITEMS)
+                        .execute();
+            } catch (GoogleJsonResponseException e) {
+                if (e.getStatusCode() == 429) SheetsReader.LOGGER.error("API call quota exceeded. Try again later!");
+                else SheetsReader.LOGGER.error("Couldn't retrieve data", e);
+                return null;
+            }
 
             List<List<Object>> values = response.getValues();
             SheetsReader.devLogger("got response");
-            if (values == null || values.isEmpty()) SheetsReader.devLogger("no values found in Sheet!", true, null);
+            if (values == null || values.isEmpty()) SheetsReader.LOGGER.warn("No values found in Sheet!");
             else {
                 Identifier id = null;
                 String name = null, restriction = null, reason = null, magic = null;
@@ -66,12 +74,10 @@ public class SheetsReaderUtil {
                     }
                 }
             }
-
         } catch (Exception e) {
             SheetsReader.devLogger("Error while creating sheetsService", true, e);
             list.clear();
         }
-
         return list;
     }
 

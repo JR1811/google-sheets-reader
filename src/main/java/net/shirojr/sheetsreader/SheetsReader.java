@@ -15,7 +15,7 @@ import java.util.List;
 
 public class SheetsReader implements ModInitializer {
     public static final String MODID = "sheetsreader";
-    private static final Logger LOGGER = LoggerFactory.getLogger(MODID);
+    public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
     private static List<SheetsElement> elementList;
     private static SheetsConfigData config = new SheetsConfigData();
@@ -35,6 +35,7 @@ public class SheetsReader implements ModInitializer {
         SheetsReader.config = config;
     }
 
+    @Nullable
     public static List<SheetsElement> getElementList() {
         return elementList;
     }
