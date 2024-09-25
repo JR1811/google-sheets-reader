@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '1.7-SNAPSHOT'
 	id 'maven-publish'
+	id 'java'
 }
 
 version = project.mod_version
@@ -61,12 +62,23 @@ jar {
 
 publishing {
 	publications {
-		mavenJava(MavenPublication) {
+		create("mavenJava", MavenPublication) {
 			from components.java
+			artifactId = project.archives_base_name
+			version = project.mod_version
 		}
 	}
 
 	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+	// Specifically for Repsy, and how to manage the credentials, check out https://docs.repsy.io/maven/using-repository-with-gradle/
 	repositories {
+		maven {
+			name = 'repsy'
+			url = uri('https://repo.repsy.io/mvn/fabricated-atelier/fabric-sheets-reader/')
+			credentials {
+				username = project.findProperty("repsyUsername") ?: ""
+				password = project.findProperty("repsyPassword") ?: ""
+			}
+		}
 	}
 }

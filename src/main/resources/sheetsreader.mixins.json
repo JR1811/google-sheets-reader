@@ -3,7 +3,6 @@
   "package": "net.shirojr.sheetsreader.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ItemsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

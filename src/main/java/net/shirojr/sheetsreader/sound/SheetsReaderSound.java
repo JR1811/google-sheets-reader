@@ -13,5 +13,5 @@ public class SheetsReaderSound {
         return Registry.register(Registry.SOUND_EVENT, new Identifier(SheetsReader.MODID, id), sound);
     }
 
-    public static void initializeSounds() { }
+    public static void initialize() { }
 }
