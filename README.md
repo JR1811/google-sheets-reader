@@ -34,7 +34,7 @@ dependencies {
 
 Then in your `gradle.properties` file add the version number using the `google_sheets_reader_version` variable.
 You can find available versions at our 
-[Maven repository](https://repsy.io/fabricated-atelier/maven/fabric-sheets-reader/artifacts) or in the 
+[Maven repository](https://repo.repsy.io/mvn/fabricated-atelier/fabric-sheets-reader/) or in the 
 [Releases](https://github.com/JR1811/google-sheets-reader/releases).
 
 Also don't forget to add the `sheetsreader` modid to the `depends` section in your `fabric.mod.json` file.
