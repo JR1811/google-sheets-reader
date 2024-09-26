@@ -28,7 +28,7 @@ dependencies {
     // ...
     
     // google-sheets-reader-api
-    implementation "net.shirojr.sheetsreader:sheetsreader:${project.google_sheets_reader_version}"
+    implementation "net.shirojr:sheetsreader:${project.google_sheets_reader_version}"
 }
 ```
 
