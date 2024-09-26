@@ -34,7 +34,7 @@ in place for that to keep the size of this lib to a minimum.
 To update a config file at runtime, use the `loadFromFile` method of the `SheetsConfigHandler` class.
 You can also overwrite the config file with the `saveToFile` method.
 
-The api call might block the current thread so if the API call takes a long time the game could potentially freeze.
+The API call might block the current thread so if the API call takes a long time the game could potentially freeze.
 As a rule of thumb, don't reload the config at run-time if the incoming sheet data is huge.
 
 ### API Credentials From A Datapack
@@ -52,7 +52,7 @@ For an example check out the [example.json](../../../../../resources/data/sheets
 file and where it's located at.
 
 The api call is done async, so if you reload datapacks the current thread won't be blocked. Your console will notify
-you about a successfully finished api call's data retrieval.
+you about a successfully finished API call's data retrieval.
 
 ## Accessing `SheetsData`
 
