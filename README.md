@@ -4,7 +4,9 @@ A library mod for Fabric Minecraft which retrieves Google Sheets data.
 By itself this library mod does not change gameplay behavior but provides data at run-time
 which can be used by other mods.
 
-This library is only needed on the logical server side. Users only need to install it, if 
+This library is only needed on the logical server side. Users only need to install it, if they want to use
+it in a single player environment. For anything specific, check out the mods which make use of this library and
+follow their instructions.
 
 ## How to use
 
