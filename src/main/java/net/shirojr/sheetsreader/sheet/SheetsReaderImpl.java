@@ -1,4 +1,4 @@
-package net.shirojr.sheetsreader.api;
+package net.shirojr.sheetsreader.sheet;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -10,6 +10,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.shirojr.sheetsreader.SheetsReader;
+import net.shirojr.sheetsreader.data.CredentialsData;
 import net.shirojr.sheetsreader.data.RowData;
 import net.shirojr.sheetsreader.data.SheetData;
 import org.jetbrains.annotations.Nullable;

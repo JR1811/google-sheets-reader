@@ -5,7 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import net.fabricmc.loader.api.FabricLoader;
 import net.shirojr.sheetsreader.SheetsReader;
-import net.shirojr.sheetsreader.api.CredentialsData;
+import net.shirojr.sheetsreader.api.DataHolder;
+import net.shirojr.sheetsreader.data.CredentialsData;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
@@ -47,7 +48,7 @@ public class SheetsConfigHandler {
             } else {
                 credentialsData = Optional.of(GSON.fromJson(fileContents, CredentialsData.class)).orElse(null);
             }
-            SheetsReader.reloadConfigSheet();
+            DataHolder.reloadConfigSheet();
             return;
         } catch (IOException e) {
             SheetsReader.devLogger("Failed to find config file - Creating new one", true, e);
@@ -57,6 +58,6 @@ public class SheetsConfigHandler {
         }
         SheetsReader.LOGGER.error("Missing important credentials for Google Sheets API. Check the config at: %s".formatted(CONFIG_FILE));
         credentialsData = null;
-        SheetsReader.reloadConfigSheet();
+        DataHolder.reloadConfigSheet();
     }
 }

@@ -8,7 +8,8 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.shirojr.sheetsreader.SheetsReader;
-import net.shirojr.sheetsreader.api.CredentialsData;
+import net.shirojr.sheetsreader.api.DataHolder;
+import net.shirojr.sheetsreader.data.CredentialsData;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,7 +55,7 @@ public class SheetsDatapackHandler implements SimpleSynchronousResourceReloadLis
                 SheetsReader.LOGGER.error("%s couldn't be loaded due to invalid data".formatted(identifier), e);
             }
         }
-        SheetsReader.reloadDatapackSheets();
+        DataHolder.reloadDatapackSheets();
     }
 
     public static void initialize() {

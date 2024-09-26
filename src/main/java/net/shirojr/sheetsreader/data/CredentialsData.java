@@ -1,4 +1,4 @@
-package net.shirojr.sheetsreader.api;
+package net.shirojr.sheetsreader.data;
 
 /**
  * Important credentials to address the correct sheets

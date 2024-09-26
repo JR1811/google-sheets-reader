@@ -74,7 +74,7 @@ publishing {
 	repositories {
 		maven {
 			name = 'repsy'
-			url = uri('https://repo.repsy.io/mvn/fabricated-atelier/fabric-sheets-reader/')
+			url = uri("https://repo.repsy.io/mvn/fabricated-atelier/fabric-sheets-reader/")
 			credentials {
 				username = project.findProperty("repsyUsername") ?: ""
 				password = project.findProperty("repsyPassword") ?: ""

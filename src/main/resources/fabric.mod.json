@@ -17,9 +17,6 @@
 	"entrypoints": {
 		"main": [
           "net.shirojr.sheetsreader.SheetsReader"
-		],
-		"client": [
-			"net.shirojr.sheetsreader.SheetsReaderClient"
 		]
 	},
 	"mixins": [
