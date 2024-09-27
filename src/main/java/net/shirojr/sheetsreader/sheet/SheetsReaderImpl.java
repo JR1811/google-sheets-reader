@@ -4,16 +4,16 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.services.json.AbstractGoogleJsonClientRequest;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.*;
+import com.google.api.services.sheets.v4.model.CellData;
+import com.google.api.services.sheets.v4.model.CellFormat;
+import com.google.api.services.sheets.v4.model.Sheet;
+import com.google.api.services.sheets.v4.model.Spreadsheet;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.shirojr.sheetsreader.SheetsReader;
 import net.shirojr.sheetsreader.data.CredentialsData;
 import net.shirojr.sheetsreader.data.RowData;
 import net.shirojr.sheetsreader.data.SheetData;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -46,7 +46,7 @@ public class SheetsReaderImpl {
                     RowData rowData = new RowData();
                     for (int j = 0; j < row.getValues().size(); j++) {
                         CellData cell = row.getValues().get(j);
-                        if (cell == null || cell.isEmpty()) continue;
+                        if (isEmptyOrBlank(cell)) continue;
                         rowData.cells().put(j, cell);
                         rowIsBlank = false;
                     }
@@ -75,7 +75,8 @@ public class SheetsReaderImpl {
             targetSheet = sheet;
             break;
         }
-        if (targetSheet == null) throw new Exception("Sheet wasn't available in the specified Spreadsheets from the range");
+        if (targetSheet == null)
+            throw new Exception("Sheet wasn't available in the specified Spreadsheets from the given range");
         return targetSheet;
     }
 
@@ -95,17 +96,12 @@ public class SheetsReaderImpl {
         return Optional.of(retrievedBuilder);
     }
 
-
-    /**
-     * Get valid Item Identifier if the input exists in the registry
-     *
-     * @param id String of an item id tag (e.g. minecraft:stick)
-     * @return valid Identifier of an Item or Null
-     */
-    @Nullable
-    public static Identifier getValidIdFromString(String id) {
-        Identifier identifier = new Identifier(id);
-        if (!Registry.ITEM.containsId(identifier)) return null;
-        return identifier;
+    private static boolean isEmptyOrBlank(CellData cellData) {
+        if (cellData.getEffectiveValue() != null) return false;
+        CellFormat format = cellData.getEffectiveFormat();
+        return format == null || format.getBackgroundColor() == null ||
+                (format.getBackgroundColor().getRed() == 1.0 &&
+                        format.getBackgroundColor().getGreen() == 1.0 &&
+                        format.getBackgroundColor().getBlue() == 1.0);
     }
 }

@@ -52,7 +52,7 @@ public class SheetsDatapackHandler implements SimpleSynchronousResourceReloadLis
                 }
                 credentialsData.put(identifier, new CredentialsData(sheetId, range, apiKey));
             } catch (Exception e) {
-                SheetsReader.LOGGER.error("%s couldn't be loaded due to invalid data".formatted(identifier), e);
+                SheetsReader.LOGGER.error("%s couldn't be loaded due to invalid credentials data".formatted(identifier), e);
             }
         }
         DataHolder.reloadDatapackSheets();
