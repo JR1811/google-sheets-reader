@@ -1,11 +1,10 @@
 package net.shirojr.sheetsreader.sheet;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.googleapis.services.json.AbstractGoogleJsonClientRequest;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.api.services.sheets.v4.model.*;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -13,12 +12,15 @@ import net.shirojr.sheetsreader.SheetsReader;
 import net.shirojr.sheetsreader.data.CredentialsData;
 import net.shirojr.sheetsreader.data.RowData;
 import net.shirojr.sheetsreader.data.SheetData;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchProviderException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 public class SheetsReaderImpl {
     public static Optional<SheetData> getDataFromApi(CredentialsData credentials) {
@@ -26,41 +28,55 @@ public class SheetsReaderImpl {
         try {
             Sheets sheetsService = getSheetsService(credentials).orElseThrow(() -> new NoSuchProviderException("Couldn't find the sheet service to retrieve data"));
             if (credentials.isEmpty())
-                throw new Exception("Config data was not present or complete. Skipping Data retrieval");
-            ValueRange response;
-            try {
-                response = sheetsService.spreadsheets().values()
-                        .get(credentials.sheetsId(), credentials.range())
-                        .execute();
+                throw new Exception("Credential data was not present or complete. Skipping Data retrieval from API");
+            Spreadsheet spreadsheet = sheetsService.spreadsheets()
+                    .get(credentials.sheetsId())
+                    .setRanges(List.of(credentials.range()))
+                    .setIncludeGridData(true)
+                    .execute();
 
-            } catch (GoogleJsonResponseException e) {
-                if (e.getStatusCode() == 429) SheetsReader.LOGGER.error("API call quota exceeded. Try again later!");
-                else SheetsReader.LOGGER.error("Couldn't retrieve data", e);
-                return Optional.empty();
-            }
-
-            List<List<Object>> values = response.getValues();
+            Sheet targetSheet = getSheet(credentials, spreadsheet);
             SheetsReader.devLogger("got response");
-            if (values == null || values.isEmpty()) SheetsReader.LOGGER.warn("No values found in Sheet!");
-            else {
-                for (int rowIndex = 0; rowIndex < values.size(); rowIndex++) {
-                    var row = values.get(rowIndex);
+
+            for (var grid : targetSheet.getData()) {
+                for (int i = 0; i < grid.getRowData().size(); i++) {
+                    var row = grid.getRowData().get(i);
+                    if (row == null || row.isEmpty()) continue;
                     boolean rowIsBlank = true;
                     RowData rowData = new RowData();
-                    for (int columnIndex = 0; columnIndex < row.size(); columnIndex++) {
-                        String cellValue = (String) row.get(columnIndex);
-                        if (cellValue != null && !cellValue.isBlank()) rowIsBlank = false;
-                        rowData.cell().put(columnIndex, cellValue);
+                    for (int j = 0; j < row.getValues().size(); j++) {
+                        CellData cell = row.getValues().get(j);
+                        if (cell == null || cell.isEmpty()) continue;
+                        rowData.cells().put(j, cell);
+                        rowIsBlank = false;
                     }
                     if (rowIsBlank) continue;
-                    sheetData.sheet().put(rowIndex, rowData);
+                    sheetData.rows().put(i, rowData);
                 }
             }
         } catch (Exception e) {
             SheetsReader.devLogger("Error while creating sheetsService", true, e);
-            sheetData.sheet().clear();
+            sheetData.rows().clear();
         }
         return Optional.of(sheetData);
+    }
+
+    private static @NotNull Sheet getSheet(CredentialsData credentials, Spreadsheet spreadsheet) throws Exception {
+        String targetSheetName = null;
+        if (credentials.range().contains("!")) {
+            targetSheetName = credentials.range();
+            targetSheetName = targetSheetName.substring(0, targetSheetName.indexOf("!")).replaceAll("'", "");
+        }
+        if (targetSheetName == null) throw new Exception("Couldn't find specified sheet from range");
+
+        Sheet targetSheet = null;
+        for (Sheet sheet : spreadsheet.getSheets()) {
+            if (!sheet.getProperties().getTitle().equals(targetSheetName)) continue;
+            targetSheet = sheet;
+            break;
+        }
+        if (targetSheet == null) throw new Exception("Sheet wasn't available in the specified Spreadsheets from the range");
+        return targetSheet;
     }
 
     private static Optional<Sheets> getSheetsService(CredentialsData credentials) throws IOException, GeneralSecurityException {

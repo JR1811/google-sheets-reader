@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class DataHolder {
@@ -22,19 +21,18 @@ public class DataHolder {
     public static void reloadDatapackSheets() {
         DATAPACK_SHEETS.clear();
         for (var entry : SheetsDatapackHandler.credentialsData.entrySet()) {
-            CompletableFuture<Optional<SheetData>> asyncDataRetriever =
-                    CompletableFuture.supplyAsync(() -> SheetsReaderImpl.getDataFromApi(entry.getValue()));
-            asyncDataRetriever.thenAccept(retrievedData -> {
-                if (retrievedData.isEmpty()) return;
-                DATAPACK_SHEETS.put(entry.getKey(), retrievedData.get());
-                SheetsReader.LOGGER.info("finished data retrieval from %s datapack's api call".formatted(entry.getKey()));
-            });
+            CompletableFuture.supplyAsync(() -> SheetsReaderImpl.getDataFromApi(entry.getValue()))
+                    .thenAccept(retrievedData -> {
+                        if (retrievedData.isEmpty()) return;
+                        DATAPACK_SHEETS.put(entry.getKey(), retrievedData.get());
+                        SheetsReader.LOGGER.info("finished data retrieval from %s datapack's api call".formatted(entry.getKey()));
+                    });
         }
     }
 
     public static void reloadConfigSheet() {
         if (SheetsConfigHandler.credentialsData == null) CONFIG_SHEET = null;
-        CONFIG_SHEET = SheetsReaderImpl.getDataFromApi(SheetsConfigHandler.credentialsData).orElse(null);
+        CONFIG_SHEET = SheetsReaderImpl.getDataFromApi(SheetsConfigHandler.credentialsData).orElse(null); //TODO: async
     }
 
     public static Map<Identifier, SheetData> getAllSheets() {
