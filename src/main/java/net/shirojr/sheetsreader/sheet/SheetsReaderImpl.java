@@ -4,10 +4,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.googleapis.services.json.AbstractGoogleJsonClientRequest;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.CellData;
-import com.google.api.services.sheets.v4.model.CellFormat;
-import com.google.api.services.sheets.v4.model.Sheet;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.*;
 import net.fabricmc.loader.api.FabricLoader;
 import net.shirojr.sheetsreader.SheetsReader;
 import net.shirojr.sheetsreader.data.CredentialsData;
@@ -84,8 +81,8 @@ public class SheetsReaderImpl {
         var modContainer = FabricLoader.getInstance().getModContainer(SheetsReader.MODID);
         if (modContainer.isEmpty()) return Optional.empty();
         Sheets.Builder builder = new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), GsonFactory.getDefaultInstance(), httpRequest -> {
-            httpRequest.setConnectTimeout(30000);   // 1/2 minutes connect timeout
-            httpRequest.setReadTimeout(30000);      // 1/2 minutes read timeout
+            httpRequest.setConnectTimeout(30000);   // 30 sec connect timeout
+            httpRequest.setReadTimeout(60000);      // 60 sec read timeout
             httpRequest.setLoggingEnabled(true);
         });
         Sheets retrievedBuilder = builder.setApplicationName(SheetsReader.MODID).setGoogleClientRequestInitializer(request -> {
@@ -96,12 +93,18 @@ public class SheetsReaderImpl {
         return Optional.of(retrievedBuilder);
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     private static boolean isEmptyOrBlank(CellData cellData) {
         if (cellData.getEffectiveValue() != null) return false;
         CellFormat format = cellData.getEffectiveFormat();
-        return format == null || format.getBackgroundColor() == null ||
-                (format.getBackgroundColor().getRed() == 1.0 &&
-                        format.getBackgroundColor().getGreen() == 1.0 &&
-                        format.getBackgroundColor().getBlue() == 1.0);
+        if (format == null) return true;
+        Color cellColor = format.getBackgroundColor();
+        if (cellColor != null && !cellColor.isEmpty()) {
+            if (cellColor.getRed() != null && cellColor.getRed() != 1.0) return false;
+            if (cellColor.getGreen() != null && cellColor.getGreen() != 1.0) return false;
+            if (cellColor.getBlue() != null && cellColor.getBlue() != 1.0) return false;
+            if (cellColor.getAlpha() != null && cellColor.getAlpha() != 1.0) return false;
+        }
+        return true;
     }
 }

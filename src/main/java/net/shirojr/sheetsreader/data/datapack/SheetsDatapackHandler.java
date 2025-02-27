@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SheetsDatapackHandler implements SimpleSynchronousResourceReloadListener {
-    private static final String directory = "sheet_credentials";
+    public static final String directory = "sheet_credentials";
     public static Map<Identifier, CredentialsData> credentialsData = new HashMap<>();
 
     @Override
@@ -50,7 +50,12 @@ public class SheetsDatapackHandler implements SimpleSynchronousResourceReloadLis
                     if (range == null) errorCollector += " range";
                     throw new Exception(errorCollector);
                 }
-                credentialsData.put(identifier, new CredentialsData(sheetId, range, apiKey));
+
+                String namespace = identifier.getNamespace();
+                String cleanPath = identifier.getPath().substring(0, identifier.getPath().lastIndexOf("."));
+                Identifier cleanIdentifier = new Identifier(namespace, cleanPath);
+
+                credentialsData.put(cleanIdentifier, new CredentialsData(sheetId, range, apiKey));
             } catch (Exception e) {
                 SheetsReader.LOGGER.error("%s couldn't be loaded due to invalid credentials data".formatted(identifier), e);
             }

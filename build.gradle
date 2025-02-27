@@ -11,7 +11,7 @@ base {
 	archivesName = project.archives_base_name
 }
 
-configurations.all {
+configurations.configureEach {
 	resolutionStrategy {
 		force("net.fabricmc:fabric-loader:$loader_version")
 	}
@@ -30,9 +30,9 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	// Google Sheets API
-	implementation 'com.google.api-client:google-api-client:2.6.0'
-	implementation 'com.google.oauth-client:google-oauth-client-jetty:1.36.0'
-	implementation 'com.google.apis:google-api-services-sheets:v4-rev20240826-2.0.0'
+	api 'com.google.api-client:google-api-client:2.6.0'
+	api 'com.google.oauth-client:google-oauth-client-jetty:1.36.0'
+	api 'com.google.apis:google-api-services-sheets:v4-rev20240826-2.0.0'
 }
 
 processResources {

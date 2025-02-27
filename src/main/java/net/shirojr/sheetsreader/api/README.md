@@ -56,6 +56,5 @@ you about a successfully finished API call's data retrieval.
 
 ## Accessing `SheetsData`
 
-To get the `SheetsData`, which your credentials retrieved, check out the [DataHolder](./DataHolder.java) class to get 
-access to the `SheetData`. `SheetData` consists of multiple `RowData` objects, which contains the cells 
+To get the `SheetsData`, which your credentials retrieved, check out the [DataHolder](./DataHolder.java) class. `SheetData` consists of multiple `RowData` objects, which contains the cells 
 data as `String` values. Empty rows and cells are skipped so make use of the index which are stored together with them.

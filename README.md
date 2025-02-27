@@ -49,7 +49,7 @@ For the credentials of this Google Sheets Reader Library, you need three values:
 - Range
 
 First set up a project, if you don't have one already, in the [Google Console](https://console.cloud.google.com/apis/). 
-Enable the Google Sheets API and get a new API key from there. Take a closer look at the settings since there are many
+Enable Google Sheets API and get a new API key. Take a closer look at the settings since there are many
 options to handle the API key in a safer way.
 
 After that you can retrieve the Sheet ID from your spreadsheet's URL:

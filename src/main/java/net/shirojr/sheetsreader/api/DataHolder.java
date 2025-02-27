@@ -25,20 +25,16 @@ public class DataHolder {
                     .thenAccept(retrievedData -> {
                         if (retrievedData.isEmpty()) return;
                         DATAPACK_SHEETS.put(entry.getKey(), retrievedData.get());
-                        SheetsReader.LOGGER.info("finished data retrieval from %s datapack's api call".formatted(entry.getKey()));
+                        SheetsReader.LOGGER.info("finished data retrieval from %s's api call".formatted(entry.getKey()));
                     });
         }
     }
 
     public static void reloadConfigSheet() {
-        if (SheetsConfigHandler.credentialsData == null) CONFIG_SHEET = null;
+        if (SheetsConfigHandler.credentialsData == null || SheetsConfigHandler.credentialsData.isEmpty()) {
+            CONFIG_SHEET = null;
+            return;
+        }
         CONFIG_SHEET = SheetsReaderImpl.getDataFromApi(SheetsConfigHandler.credentialsData).orElse(null); //TODO: async
-    }
-
-    public static Map<Identifier, SheetData> getAllSheets() {
-        Map<Identifier, SheetData> map = new HashMap<>();
-        map.put(new Identifier(SheetsReader.MODID, "config.json"), CONFIG_SHEET);
-        map.putAll(DATAPACK_SHEETS);
-        return map;
     }
 }
